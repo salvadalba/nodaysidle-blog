@@ -3,10 +3,19 @@ import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import { getCollection } from 'astro:content';
 
 // Get current language from URL params or default to English
 const url = new URL(Astro.request.url);
 const lang = url.searchParams.get('lang') || 'en';
+
+// Get posts from content collections
+const allPosts = (await getCollection('blog')).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+// Filter posts by language
+const posts = allPosts.filter(post => (post.data.language || 'en') === lang);
 ---
 
 <!doctype html>
@@ -457,31 +466,23 @@ const lang = url.searchParams.get('lang') || 'en';
 		<Footer />
 
 		<script>
-			import { blogApi } from '../lib/pocketbase';
+			// Static data from content collections (passed from server)
+			const staticPosts = {JSON.stringify(posts.map(post => ({
+				slug: post.slug,
+				title: post.data.title,
+				description: post.data.description,
+				publish_date: post.data.pubDate.toISOString(),
+				tags: post.data.tags || [],
+				language: post.data.language || 'en'
+			})))};
 
 			let currentLang = '{lang}';
-			let allPosts = [];
+			let allPosts = JSON.parse(staticPosts).filter(post => post.language === currentLang);
 
 			// Load posts
-			async function loadPosts() {
-				try {
-					const response = await blogApi.getPublishedPosts({
-						language: currentLang,
-						limit: 50
-					});
-
-					allPosts = response.items;
-					renderPosts(allPosts);
-					updateStats(response.totalItems);
-				} catch (error) {
-					console.error('Failed to load posts:', error);
-					document.getElementById('postsSection').innerHTML = `
-						<div style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: var(--text-muted);">
-							<h3>Unable to load posts</h3>
-							<p>Please try again later.</p>
-						</div>
-					`;
-				}
+			function loadPosts() {
+				renderPosts(allPosts);
+				updateStats(allPosts.length);
 			}
 
 			// Render posts
@@ -507,7 +508,7 @@ const lang = url.searchParams.get('lang') || 'en';
 						<p class="post-description">${post.description}</p>
 						<div class="post-meta">
 							<span class="post-language">${currentLang.toUpperCase()}</span>
-							<span>${new Date(post.publish_date || post.created).toLocaleDateString()}</span>
+							<span>${new Date(post.publish_date).toLocaleDateString()}</span>
 						</div>
 					</a>
 				`).join('');
