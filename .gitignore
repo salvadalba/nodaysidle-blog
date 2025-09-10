@@ -25,3 +25,8 @@ pnpm-debug.log*
 
 # Local Netlify folder
 .netlify
+
+# PocketBase binaries
+pocketbase
+pocketbase_*.zip
+pb_data/*.db-*

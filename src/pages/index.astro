@@ -16,26 +16,146 @@ const lang = url.searchParams.get('lang') || 'en';
 		<style>
 			.hero {
 				background: var(--gradient-secondary);
-				padding: 4rem 2rem;
+				padding: 6rem 2rem 4rem;
 				text-align: center;
 				color: var(--text-primary);
+				position: relative;
+				overflow: hidden;
 			}
+
+			.hero::before {
+				content: '';
+				position: absolute;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				background:
+					radial-gradient(circle at 20% 30%, rgba(139, 92, 246, 0.2) 0%, transparent 50%),
+					radial-gradient(circle at 80% 70%, rgba(168, 85, 247, 0.15) 0%, transparent 50%);
+				animation: nebula 15s ease-in-out infinite;
+			}
+
+			.hero-content {
+				position: relative;
+				z-index: 2;
+				max-width: 1200px;
+				margin: 0 auto;
+			}
+
 			.hero-title {
-				font-size: 3rem;
+				font-size: 3.5rem;
 				font-weight: 700;
 				margin-bottom: 1rem;
 				background: var(--gradient-primary);
 				-webkit-background-clip: text;
 				-webkit-text-fill-color: transparent;
 				background-clip: text;
+				text-shadow: 0 0 30px rgba(139, 92, 246, 0.5);
+				animation: float 4s ease-in-out infinite;
 			}
+
 			.hero-subtitle {
 				font-size: 1.25rem;
 				color: var(--text-secondary);
-				margin-bottom: 2rem;
+				margin-bottom: 3rem;
 				max-width: 600px;
 				margin-left: auto;
 				margin-right: auto;
+				text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+			}
+
+			/* Featured Post Styling */
+			.featured-post {
+				background: rgba(26, 26, 58, 0.9);
+				backdrop-filter: blur(20px);
+				border: 1px solid var(--border);
+				border-radius: 20px;
+				padding: 2.5rem;
+				margin: 3rem auto;
+				max-width: 800px;
+				box-shadow: var(--glow);
+				position: relative;
+				overflow: hidden;
+				animation: float 6s ease-in-out infinite reverse;
+			}
+
+			.featured-post::before {
+				content: '';
+				position: absolute;
+				top: 0;
+				left: -100%;
+				width: 100%;
+				height: 100%;
+				background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.1), transparent);
+				animation: shimmer 3s ease-in-out infinite;
+			}
+
+			.featured-badge {
+				display: inline-block;
+				background: var(--gradient-primary);
+				color: white;
+				padding: 0.5rem 1rem;
+				border-radius: 20px;
+				font-size: 0.8rem;
+				font-weight: 600;
+				margin-bottom: 1.5rem;
+				box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+				animation: cosmic-glow 2s ease-in-out infinite;
+			}
+
+			.featured-title {
+				font-size: 2.2rem;
+				font-weight: 700;
+				color: var(--text-primary);
+				margin-bottom: 1rem;
+				line-height: 1.2;
+				text-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+			}
+
+			.featured-description {
+				font-size: 1.1rem;
+				color: var(--text-secondary);
+				line-height: 1.6;
+				margin-bottom: 1.5rem;
+				max-width: 600px;
+				margin-left: auto;
+				margin-right: auto;
+			}
+
+			.featured-meta {
+				display: flex;
+				justify-content: center;
+				gap: 2rem;
+				margin-bottom: 2rem;
+				font-size: 0.9rem;
+				color: var(--text-muted);
+			}
+
+			.featured-cta {
+				display: inline-block;
+				background: var(--gradient-primary);
+				color: white;
+				padding: 1rem 2rem;
+				border-radius: 12px;
+				text-decoration: none;
+				font-weight: 600;
+				font-size: 1.1rem;
+				transition: all 0.3s ease;
+				box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+				border: 1px solid transparent;
+			}
+
+			.featured-cta:hover {
+				transform: translateY(-3px) scale(1.05);
+				box-shadow: 0 12px 35px rgba(139, 92, 246, 0.6);
+				border-color: var(--accent);
+			}
+
+			/* Shimmer animation */
+			@keyframes shimmer {
+				0% { left: -100%; }
+				100% { left: 100%; }
 			}
 			.language-switcher {
 				display: flex;
@@ -89,20 +209,38 @@ const lang = url.searchParams.get('lang') || 'en';
 				margin: 0 auto;
 				padding: 2rem;
 			}
-			.post-card {
-				background: var(--bg-card);
-				border-radius: 12px;
-				padding: 1.5rem;
-				box-shadow: var(--box-shadow);
+			.blog-card {
+				background: rgba(26, 26, 58, 0.8);
+				backdrop-filter: blur(15px);
 				border: 1px solid var(--border);
-				transition: transform 0.2s ease, box-shadow 0.2s ease;
+				border-radius: 16px;
+				padding: 1.5rem;
+				transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 				text-decoration: none;
 				color: inherit;
 				display: block;
+				position: relative;
+				overflow: hidden;
+				box-shadow: var(--box-shadow);
 			}
-			.post-card:hover {
-				transform: translateY(-4px);
-				box-shadow: var(--box-shadow-lg);
+			.blog-card::before {
+				content: '';
+				position: absolute;
+				top: 0;
+				left: -100%;
+				width: 100%;
+				height: 100%;
+				background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.1), transparent);
+				transition: left 0.5s ease;
+			}
+			.blog-card:hover::before {
+				left: 100%;
+			}
+			.blog-card:hover {
+				transform: translateY(-8px) scale(1.02);
+				box-shadow: var(--glow);
+				border-color: var(--accent);
+				background: rgba(42, 27, 61, 0.9);
 			}
 			.post-image {
 				width: 100%;
@@ -137,13 +275,19 @@ const lang = url.searchParams.get('lang') || 'en';
 				color: var(--text-muted);
 			}
 			.post-language {
-				background: var(--bg-tertiary);
-				color: var(--text-secondary);
-				padding: 0.25rem 0.5rem;
-				border-radius: 4px;
-				font-size: 0.8rem;
+				background: var(--gradient-primary);
+				color: white;
+				padding: 0.25em 0.5em;
+				border-radius: 8px;
+				font-size: 0.8em;
 				font-weight: 600;
 				text-transform: uppercase;
+				box-shadow: 0 2px 10px rgba(139, 92, 246, 0.3);
+				transition: all 0.3s ease;
+			}
+			.post-language:hover {
+				transform: scale(1.1);
+				box-shadow: 0 4px 20px rgba(139, 92, 246, 0.5);
 			}
 			.stats-section {
 				background: var(--bg-card);
@@ -177,30 +321,101 @@ const lang = url.searchParams.get('lang') || 'en';
 				font-size: 0.9rem;
 			}
 			@media (max-width: 768px) {
-				.hero-title {
-					font-size: 2rem;
+				.hero {
+					padding: 4rem 1rem 3rem;
 				}
+
+				.hero-title {
+					font-size: 2.5rem;
+				}
+
+				.hero-subtitle {
+					font-size: 1.1rem;
+					margin-bottom: 2rem;
+				}
+
+				.featured-post {
+					padding: 2rem 1.5rem;
+					margin: 2rem 1rem;
+				}
+
+				.featured-title {
+					font-size: 1.8rem;
+				}
+
+				.featured-description {
+					font-size: 1rem;
+				}
+
+				.featured-meta {
+					flex-direction: column;
+					gap: 0.5rem;
+					align-items: center;
+				}
+
 				.posts-grid {
 					grid-template-columns: 1fr;
 					padding: 1rem;
 				}
+
 				.language-switcher {
 					flex-wrap: wrap;
+				}
+			}
+
+			@media (max-width: 480px) {
+				.hero-title {
+					font-size: 2rem;
+				}
+
+				.featured-title {
+					font-size: 1.5rem;
+				}
+
+				.featured-post {
+					padding: 1.5rem 1rem;
+					margin: 1.5rem 0.5rem;
+				}
+
+				.featured-cta {
+					padding: 0.8rem 1.5rem;
+					font-size: 1rem;
 				}
 			}
 		</style>
 	</head>
 	<body>
+		<!-- Cosmic Space Particles -->
+		<div class="cosmic-particles"></div>
+
+		<!-- Add padding for fixed header -->
+		<div style="padding-top: 70px;"></div>
+
 		<a href="#main-content" class="skip-link sr-only">Skip to main content</a>
 		<Header />
 		<header class="hero">
-			<h1 class="hero-title">NoDaysIdle Blog</h1>
-			<p class="hero-subtitle">Exploring AI ethics and human responsibility</p>
-			<nav class="language-switcher" aria-label="Language selection">
-				<a href="?lang=en" class={`lang-btn ${lang === 'en' ? 'active' : ''}`} aria-current={lang === 'en' ? 'page' : undefined}>English</a>
-				<a href="?lang=it" class={`lang-btn ${lang === 'it' ? 'active' : ''}`} aria-current={lang === 'it' ? 'page' : undefined}>Italiano</a>
-				<a href="?lang=sl" class={`lang-btn ${lang === 'sl' ? 'active' : ''}`} aria-current={lang === 'sl' ? 'page' : undefined}>Slovenščina</a>
-			</nav>
+			<div class="hero-content">
+				<h1 class="hero-title">NoDaysIdle Blog</h1>
+				<p class="hero-subtitle">Exploring AI ethics and human responsibility</p>
+
+				<!-- Featured Post Section -->
+				<div class="featured-post">
+					<div class="featured-badge">✨ Featured Article</div>
+					<h2 class="featured-title">The Mirror Effect: When AI Reflects Our Own Biases</h2>
+					<p class="featured-description">Discover how AI systems don't create bias—they amplify human prejudices. Learn about the mirror effect and why human accountability matters in AI development.</p>
+					<div class="featured-meta">
+						<span class="featured-date">September 10, 2025</span>
+						<span class="featured-reading-time">8 min read</span>
+					</div>
+					<a href="/blog/mirror-effect-english?lang=en" class="featured-cta">Read Full Article →</a>
+				</div>
+
+				<nav class="language-switcher" aria-label="Language selection">
+					<a href="?lang=en" class={`lang-btn ${lang === 'en' ? 'active' : ''}`} aria-current={lang === 'en' ? 'page' : undefined}>English</a>
+					<a href="?lang=it" class={`lang-btn ${lang === 'it' ? 'active' : ''}`} aria-current={lang === 'it' ? 'page' : undefined}>Italiano</a>
+					<a href="?lang=sl" class={`lang-btn ${lang === 'sl' ? 'active' : ''}`} aria-current={lang === 'sl' ? 'page' : undefined}>Slovenščina</a>
+				</nav>
+			</div>
 		</header>
 
 		<section class="search-section">
@@ -284,7 +499,7 @@ const lang = url.searchParams.get('lang') || 'en';
 				}
 
 				postsSection.innerHTML = posts.map(post => `
-					<a href="/blog/${post.slug}?lang=${currentLang}" class="post-card">
+					<a href="/blog/${post.slug}?lang=${currentLang}" class="blog-card">
 						<div class="post-image">
 							📝
 						</div>
