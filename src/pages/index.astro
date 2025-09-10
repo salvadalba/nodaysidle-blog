@@ -1,0 +1,327 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+
+// Get current language from URL params or default to English
+const url = new URL(Astro.request.url);
+const lang = url.searchParams.get('lang') || 'en';
+---
+
+<!doctype html>
+<html lang={lang}>
+	<head>
+		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+		<style>
+			.hero {
+				background: var(--gradient-secondary);
+				padding: 4rem 2rem;
+				text-align: center;
+				color: var(--text-primary);
+			}
+			.hero-title {
+				font-size: 3rem;
+				font-weight: 700;
+				margin-bottom: 1rem;
+				background: var(--gradient-primary);
+				-webkit-background-clip: text;
+				-webkit-text-fill-color: transparent;
+				background-clip: text;
+			}
+			.hero-subtitle {
+				font-size: 1.25rem;
+				color: var(--text-secondary);
+				margin-bottom: 2rem;
+				max-width: 600px;
+				margin-left: auto;
+				margin-right: auto;
+			}
+			.language-switcher {
+				display: flex;
+				justify-content: center;
+				gap: 1rem;
+				margin-bottom: 2rem;
+			}
+			.lang-btn {
+				padding: 0.5rem 1rem;
+				border: 1px solid var(--border);
+				border-radius: 8px;
+				background: var(--bg-tertiary);
+				color: var(--text-primary);
+				text-decoration: none;
+				transition: all 0.2s ease;
+			}
+			.lang-btn.active {
+				background: var(--gradient-primary);
+				color: white;
+				border-color: var(--primary);
+			}
+			.search-section {
+				background: var(--bg-card);
+				padding: 2rem;
+				margin: 2rem auto;
+				max-width: 800px;
+				border-radius: 12px;
+				box-shadow: var(--box-shadow);
+				border: 1px solid var(--border);
+			}
+			.search-input {
+				width: 100%;
+				padding: 1rem;
+				border: 1px solid var(--border);
+				border-radius: 8px;
+				background: var(--bg-tertiary);
+				color: var(--text-primary);
+				font-size: 16px;
+				margin-bottom: 1rem;
+			}
+			.search-input:focus {
+				outline: none;
+				border-color: var(--primary);
+				box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+			}
+			.posts-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+				gap: 2rem;
+				max-width: 1200px;
+				margin: 0 auto;
+				padding: 2rem;
+			}
+			.post-card {
+				background: var(--bg-card);
+				border-radius: 12px;
+				padding: 1.5rem;
+				box-shadow: var(--box-shadow);
+				border: 1px solid var(--border);
+				transition: transform 0.2s ease, box-shadow 0.2s ease;
+				text-decoration: none;
+				color: inherit;
+				display: block;
+			}
+			.post-card:hover {
+				transform: translateY(-4px);
+				box-shadow: var(--box-shadow-lg);
+			}
+			.post-image {
+				width: 100%;
+				height: 200px;
+				background: var(--gradient-primary);
+				border-radius: 8px;
+				margin-bottom: 1rem;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				color: white;
+				font-size: 1.5rem;
+				font-weight: 700;
+			}
+			.post-title {
+				color: var(--text-primary);
+				font-size: 1.25rem;
+				font-weight: 700;
+				margin-bottom: 0.5rem;
+				line-height: 1.3;
+			}
+			.post-description {
+				color: var(--text-secondary);
+				line-height: 1.6;
+				margin-bottom: 1rem;
+			}
+			.post-meta {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				font-size: 0.9rem;
+				color: var(--text-muted);
+			}
+			.post-language {
+				background: var(--bg-tertiary);
+				color: var(--text-secondary);
+				padding: 0.25rem 0.5rem;
+				border-radius: 4px;
+				font-size: 0.8rem;
+				font-weight: 600;
+				text-transform: uppercase;
+			}
+			.stats-section {
+				background: var(--bg-card);
+				padding: 2rem;
+				margin: 2rem auto;
+				max-width: 800px;
+				border-radius: 12px;
+				box-shadow: var(--box-shadow);
+				border: 1px solid var(--border);
+				text-align: center;
+			}
+			.stats-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+				gap: 2rem;
+				margin-top: 2rem;
+			}
+			.stat-item {
+				padding: 1rem;
+				background: var(--bg-tertiary);
+				border-radius: 8px;
+			}
+			.stat-number {
+				font-size: 2rem;
+				font-weight: 700;
+				color: var(--primary);
+				margin-bottom: 0.5rem;
+			}
+			.stat-label {
+				color: var(--text-secondary);
+				font-size: 0.9rem;
+			}
+			@media (max-width: 768px) {
+				.hero-title {
+					font-size: 2rem;
+				}
+				.posts-grid {
+					grid-template-columns: 1fr;
+					padding: 1rem;
+				}
+				.language-switcher {
+					flex-wrap: wrap;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<a href="#main-content" class="skip-link sr-only">Skip to main content</a>
+		<Header />
+		<header class="hero">
+			<h1 class="hero-title">NoDaysIdle Blog</h1>
+			<p class="hero-subtitle">Exploring AI ethics and human responsibility</p>
+			<nav class="language-switcher" aria-label="Language selection">
+				<a href="?lang=en" class={`lang-btn ${lang === 'en' ? 'active' : ''}`} aria-current={lang === 'en' ? 'page' : undefined}>English</a>
+				<a href="?lang=it" class={`lang-btn ${lang === 'it' ? 'active' : ''}`} aria-current={lang === 'it' ? 'page' : undefined}>Italiano</a>
+				<a href="?lang=sl" class={`lang-btn ${lang === 'sl' ? 'active' : ''}`} aria-current={lang === 'sl' ? 'page' : undefined}>Slovenščina</a>
+			</nav>
+		</header>
+
+		<section class="search-section">
+			<label for="searchInput" class="sr-only">Search blog posts</label>
+			<input
+				type="text"
+				id="searchInput"
+				class="search-input"
+				placeholder="Search blog posts..."
+				aria-describedby="searchHelp"
+			/>
+			<div id="searchHelp" class="sr-only">Search through blog post titles, descriptions, and tags</div>
+		</section>
+
+		<section class="stats-section">
+			<h2>Blog Statistics</h2>
+			<div class="stats-grid">
+				<div class="stat-item">
+					<div class="stat-number" id="totalPosts">0</div>
+					<div class="stat-label">Total Posts</div>
+				</div>
+				<div class="stat-item">
+					<div class="stat-number" id="publishedPosts">0</div>
+					<div class="stat-label">Published</div>
+				</div>
+				<div class="stat-item">
+					<div class="stat-number" id="languages">3</div>
+					<div class="stat-label">Languages</div>
+				</div>
+			</div>
+		</section>
+
+		<main id="main-content" class="posts-section">
+			<section id="postsSection" class="posts-grid" aria-label="Blog posts" role="region" aria-live="polite">
+				<!-- Posts will be loaded here -->
+			</section>
+		</main>
+
+		<Footer />
+
+		<script>
+			import { blogApi } from '../lib/pocketbase';
+
+			let currentLang = '{lang}';
+			let allPosts = [];
+
+			// Load posts
+			async function loadPosts() {
+				try {
+					const response = await blogApi.getPublishedPosts({
+						language: currentLang,
+						limit: 50
+					});
+
+					allPosts = response.items;
+					renderPosts(allPosts);
+					updateStats(response.totalItems);
+				} catch (error) {
+					console.error('Failed to load posts:', error);
+					document.getElementById('postsSection').innerHTML = `
+						<div style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: var(--text-muted);">
+							<h3>Unable to load posts</h3>
+							<p>Please try again later.</p>
+						</div>
+					`;
+				}
+			}
+
+			// Render posts
+			function renderPosts(posts) {
+				const postsSection = document.getElementById('postsSection');
+
+				if (posts.length === 0) {
+					postsSection.innerHTML = `
+						<div style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: var(--text-muted);">
+							<h3>No posts found</h3>
+							<p>Check back later for new content.</p>
+						</div>
+					`;
+					return;
+				}
+
+				postsSection.innerHTML = posts.map(post => `
+					<a href="/blog/${post.slug}?lang=${currentLang}" class="post-card">
+						<div class="post-image">
+							📝
+						</div>
+						<h3 class="post-title">${post.title}</h3>
+						<p class="post-description">${post.description}</p>
+						<div class="post-meta">
+							<span class="post-language">${currentLang.toUpperCase()}</span>
+							<span>${new Date(post.publish_date || post.created).toLocaleDateString()}</span>
+						</div>
+					</a>
+				`).join('');
+			}
+
+			// Update stats
+			function updateStats(total) {
+				document.getElementById('totalPosts').textContent = total.toString();
+				document.getElementById('publishedPosts').textContent = allPosts.length.toString();
+			}
+
+			// Search functionality
+			document.getElementById('searchInput').addEventListener('input', (e) => {
+				const query = e.target.value.toLowerCase();
+				if (!query) {
+					renderPosts(allPosts);
+					return;
+				}
+
+				const filteredPosts = allPosts.filter(post =>
+					post.title.toLowerCase().includes(query) ||
+					post.description.toLowerCase().includes(query) ||
+					(post.tags && post.tags.some(tag => tag.toLowerCase().includes(query)))
+				);
+				renderPosts(filteredPosts);
+			});
+
+			// Initial load
+			loadPosts();
+		</script>
+	</body>
+</html>

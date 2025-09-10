@@ -1,0 +1,335 @@
+---
+import BaseHead from '../../../components/BaseHead.astro';
+---
+
+<html lang="en">
+	<head>
+		<BaseHead title="Manage Posts - Admin Dashboard" description="Manage blog posts" />
+		<style>
+			.posts-container {
+				min-height: 100vh;
+				background: var(--gradient-secondary);
+				padding: 2rem;
+			}
+			.posts-header {
+				background: var(--bg-card);
+				border-radius: 12px;
+				padding: 2rem;
+				margin-bottom: 2rem;
+				box-shadow: var(--box-shadow-lg);
+				border: 1px solid var(--border);
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+			}
+			.posts-title {
+				color: var(--text-primary);
+				margin: 0;
+			}
+			.posts-actions {
+				display: flex;
+				gap: 1rem;
+			}
+			.posts-grid {
+				display: grid;
+				gap: 1rem;
+			}
+			.post-card {
+				background: var(--bg-card);
+				border-radius: 12px;
+				padding: 1.5rem;
+				box-shadow: var(--box-shadow);
+				border: 1px solid var(--border);
+				transition: transform 0.2s ease, box-shadow 0.2s ease;
+			}
+			.post-card:hover {
+				transform: translateY(-2px);
+				box-shadow: var(--box-shadow-lg);
+			}
+			.post-header {
+				display: flex;
+				justify-content: space-between;
+				align-items: flex-start;
+				margin-bottom: 1rem;
+			}
+			.post-title {
+				color: var(--text-primary);
+				margin: 0;
+				font-size: 1.25rem;
+				font-weight: 700;
+			}
+			.post-meta {
+				display: flex;
+				gap: 1rem;
+				align-items: center;
+				margin-bottom: 1rem;
+			}
+			.post-status {
+				padding: 0.25rem 0.5rem;
+				border-radius: 4px;
+				font-size: 0.8rem;
+				font-weight: 600;
+				text-transform: uppercase;
+			}
+			.status-published {
+				background: var(--success);
+				color: white;
+			}
+			.status-draft {
+				background: var(--warning);
+				color: #1f2937;
+			}
+			.status-scheduled {
+				background: var(--secondary);
+				color: white;
+			}
+			.post-language {
+				background: var(--bg-tertiary);
+				color: var(--text-secondary);
+				padding: 0.25rem 0.5rem;
+				border-radius: 4px;
+				font-size: 0.8rem;
+				font-weight: 600;
+			}
+			.post-date {
+				color: var(--text-muted);
+				font-size: 0.9rem;
+			}
+			.post-excerpt {
+				color: var(--text-secondary);
+				line-height: 1.6;
+				margin-bottom: 1rem;
+			}
+			.post-actions {
+				display: flex;
+				gap: 0.5rem;
+			}
+			.btn {
+				padding: 0.5rem 1rem;
+				border: none;
+				border-radius: 6px;
+				font-weight: 600;
+				cursor: pointer;
+				text-decoration: none;
+				display: inline-block;
+				transition: transform 0.2s ease;
+				font-size: 0.9rem;
+			}
+			.btn:hover {
+				transform: translateY(-1px);
+			}
+			.btn-primary {
+				background: var(--gradient-primary);
+				color: white;
+			}
+			.btn-secondary {
+				background: var(--bg-tertiary);
+				color: var(--text-primary);
+				border: 1px solid var(--border);
+			}
+			.btn-danger {
+				background: var(--error);
+				color: white;
+			}
+			.filters {
+				background: var(--bg-card);
+				border-radius: 12px;
+				padding: 1.5rem;
+				margin-bottom: 2rem;
+				box-shadow: var(--box-shadow);
+				border: 1px solid var(--border);
+			}
+			.filters-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+				gap: 1rem;
+			}
+			.filter-group {
+				display: flex;
+				flex-direction: column;
+			}
+			.filter-label {
+				margin-bottom: 0.5rem;
+				color: var(--text-secondary);
+				font-weight: 600;
+				font-size: 0.9rem;
+			}
+			.filter-select {
+				padding: 0.5rem;
+				border: 1px solid var(--border);
+				border-radius: 6px;
+				background: var(--bg-tertiary);
+				color: var(--text-primary);
+			}
+			.empty-state {
+				text-align: center;
+				padding: 3rem;
+				color: var(--text-muted);
+			}
+			.empty-title {
+				font-size: 1.5rem;
+				margin-bottom: 1rem;
+				color: var(--text-secondary);
+			}
+		</style>
+	</head>
+	<body>
+		<div class="posts-container">
+			<div class="posts-header">
+				<h1 class="posts-title">Manage Posts</h1>
+				<div class="posts-actions">
+					<a href="/admin" class="btn btn-secondary">← Back to Dashboard</a>
+					<a href="/admin/posts/new" class="btn btn-primary">+ New Post</a>
+				</div>
+			</div>
+
+			<div class="filters">
+				<div class="filters-grid">
+					<div class="filter-group">
+						<label for="statusFilter" class="filter-label">Status</label>
+						<select id="statusFilter" class="filter-select">
+							<option value="">All Status</option>
+							<option value="published">Published</option>
+							<option value="draft">Draft</option>
+							<option value="scheduled">Scheduled</option>
+						</select>
+					</div>
+					<div class="filter-group">
+						<label for="languageFilter" class="filter-label">Language</label>
+						<select id="languageFilter" class="filter-select">
+							<option value="">All Languages</option>
+							<option value="en">English</option>
+							<option value="it">Italian</option>
+							<option value="sl">Slovenian</option>
+						</select>
+					</div>
+					<div class="filter-group">
+						<label for="sortFilter" class="filter-label">Sort By</label>
+						<select id="sortFilter" class="filter-select">
+							<option value="-updated">Last Updated</option>
+							<option value="-publish_date">Publish Date</option>
+							<option value="title">Title</option>
+						</select>
+					</div>
+				</div>
+			</div>
+
+			<div id="postsGrid" class="posts-grid">
+				<!-- Posts will be loaded here -->
+			</div>
+
+			<div id="emptyState" class="empty-state" style="display: none;">
+				<h3 class="empty-title">No posts found</h3>
+				<p>Try adjusting your filters or create your first post.</p>
+			</div>
+		</div>
+
+		<script>
+			import PocketBase from 'pocketbase';
+
+			// Check authentication
+			const authData = localStorage.getItem('pb_auth');
+			if (!authData) {
+				window.location.href = '/admin/login';
+			}
+
+			const pb = new PocketBase('http://127.0.0.1:8090');
+			pb.authStore.loadFromCookie(document.cookie);
+
+			let currentFilters = {
+				status: '',
+				language: '',
+				sort: '-updated'
+			};
+
+			// Load posts
+			async function loadPosts() {
+				try {
+					const filterParts = [];
+					if (currentFilters.status) {
+						filterParts.push(`status = "${currentFilters.status}"`);
+					}
+					if (currentFilters.language) {
+						filterParts.push(`language = "${currentFilters.language}"`);
+					}
+
+					const filter = filterParts.join(' && ');
+					const posts = await pb.collection('blog_posts').getList(1, 50, {
+						filter: filter || undefined,
+						sort: currentFilters.sort
+					});
+
+					renderPosts(posts.items);
+				} catch (error) {
+					console.error('Failed to load posts:', error);
+				}
+			}
+
+			// Render posts
+			function renderPosts(posts) {
+				const postsGrid = document.getElementById('postsGrid');
+				const emptyState = document.getElementById('emptyState');
+
+				if (posts.length === 0) {
+					postsGrid.innerHTML = '';
+					emptyState.style.display = 'block';
+					return;
+				}
+
+				emptyState.style.display = 'none';
+				postsGrid.innerHTML = posts.map(post => `
+					<div class="post-card">
+						<div class="post-header">
+							<h3 class="post-title">${post.title}</h3>
+							<div class="post-actions">
+								<a href="/admin/posts/edit/${post.id}" class="btn btn-secondary">Edit</a>
+								<button onclick="deletePost('${post.id}')" class="btn btn-danger">Delete</button>
+							</div>
+						</div>
+						<div class="post-meta">
+							<span class="post-status status-${post.status}">${post.status}</span>
+							<span class="post-language">${post.language.toUpperCase()}</span>
+							<span class="post-date">${new Date(post.updated).toLocaleDateString()}</span>
+						</div>
+						<p class="post-excerpt">${post.excerpt || 'No excerpt available'}</p>
+					</div>
+				`).join('');
+			}
+
+			// Delete post
+			async function deletePost(id) {
+				if (!confirm('Are you sure you want to delete this post?')) return;
+
+				try {
+					await pb.collection('blog_posts').delete(id);
+					loadPosts(); // Reload posts
+				} catch (error) {
+					console.error('Failed to delete post:', error);
+					alert('Failed to delete post');
+				}
+			}
+
+			// Make deletePost global
+			window.deletePost = deletePost;
+
+			// Filter event listeners
+			document.getElementById('statusFilter').addEventListener('change', (e) => {
+				currentFilters.status = e.target.value;
+				loadPosts();
+			});
+
+			document.getElementById('languageFilter').addEventListener('change', (e) => {
+				currentFilters.language = e.target.value;
+				loadPosts();
+			});
+
+			document.getElementById('sortFilter').addEventListener('change', (e) => {
+				currentFilters.sort = e.target.value;
+				loadPosts();
+			});
+
+			// Initial load
+			loadPosts();
+		</script>
+	</body>
+</html>

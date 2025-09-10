@@ -1,0 +1,204 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+---
+
+<html lang="en">
+	<head>
+		<BaseHead title="Admin Dashboard - NoDaysIdle Blog" description="Content management dashboard" />
+		<style>
+			.admin-container {
+				min-height: 100vh;
+				background: var(--gradient-secondary);
+				padding: 2rem;
+			}
+			.admin-header {
+				background: var(--bg-card);
+				border-radius: 12px;
+				padding: 2rem;
+				margin-bottom: 2rem;
+				box-shadow: var(--box-shadow-lg);
+				border: 1px solid var(--border);
+			}
+			.admin-title {
+				color: var(--text-primary);
+				margin-bottom: 1rem;
+			}
+			.admin-subtitle {
+				color: var(--text-secondary);
+				margin-bottom: 0;
+			}
+			.admin-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+				gap: 2rem;
+			}
+			.admin-card {
+				background: var(--bg-card);
+				border-radius: 12px;
+				padding: 1.5rem;
+				box-shadow: var(--box-shadow);
+				border: 1px solid var(--border);
+				transition: transform 0.2s ease, box-shadow 0.2s ease;
+			}
+			.admin-card:hover {
+				transform: translateY(-2px);
+				box-shadow: var(--box-shadow-lg);
+			}
+			.card-title {
+				color: var(--text-primary);
+				margin-bottom: 1rem;
+				font-size: 1.25rem;
+				font-weight: 700;
+			}
+			.card-description {
+				color: var(--text-secondary);
+				margin-bottom: 1.5rem;
+				line-height: 1.6;
+			}
+			.card-actions {
+				display: flex;
+				gap: 0.5rem;
+			}
+			.btn {
+				padding: 0.5rem 1rem;
+				border: none;
+				border-radius: 6px;
+				font-weight: 600;
+				cursor: pointer;
+				text-decoration: none;
+				display: inline-block;
+				transition: transform 0.2s ease;
+			}
+			.btn:hover {
+				transform: translateY(-1px);
+			}
+			.btn-primary {
+				background: var(--gradient-primary);
+				color: white;
+			}
+			.btn-secondary {
+				background: var(--bg-tertiary);
+				color: var(--text-primary);
+				border: 1px solid var(--border);
+			}
+			.stats-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+				gap: 1rem;
+				margin-bottom: 2rem;
+			}
+			.stat-card {
+				background: var(--bg-secondary);
+				border-radius: 8px;
+				padding: 1rem;
+				text-align: center;
+			}
+			.stat-number {
+				font-size: 2rem;
+				font-weight: 700;
+				color: var(--primary);
+				margin-bottom: 0.5rem;
+			}
+			.stat-label {
+				color: var(--text-secondary);
+				font-size: 0.9rem;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="admin-container">
+			<div class="admin-header">
+				<h1 class="admin-title">Admin Dashboard</h1>
+				<p class="admin-subtitle">Manage your blog content and settings</p>
+			</div>
+
+			<div class="stats-grid">
+				<div class="stat-card">
+					<div class="stat-number" id="totalPosts">0</div>
+					<div class="stat-label">Total Posts</div>
+				</div>
+				<div class="stat-card">
+					<div class="stat-number" id="publishedPosts">0</div>
+					<div class="stat-label">Published</div>
+				</div>
+				<div class="stat-card">
+					<div class="stat-number" id="draftPosts">0</div>
+					<div class="stat-label">Drafts</div>
+				</div>
+				<div class="stat-card">
+					<div class="stat-number" id="scheduledPosts">0</div>
+					<div class="stat-label">Scheduled</div>
+				</div>
+			</div>
+
+			<div class="admin-grid">
+				<div class="admin-card">
+					<h3 class="card-title">📝 Manage Posts</h3>
+					<p class="card-description">Create, edit, and manage your blog posts across all languages.</p>
+					<div class="card-actions">
+						<a href="/admin/posts" class="btn btn-primary">View Posts</a>
+						<a href="/admin/posts/new" class="btn btn-secondary">New Post</a>
+					</div>
+				</div>
+
+				<div class="admin-card">
+					<h3 class="card-title">⚙️ Settings</h3>
+					<p class="card-description">Configure site settings, SEO, and publishing preferences.</p>
+					<div class="card-actions">
+						<a href="/admin/settings" class="btn btn-primary">Site Settings</a>
+						<a href="/admin/settings/seo" class="btn btn-secondary">SEO Settings</a>
+					</div>
+				</div>
+
+				<div class="admin-card">
+					<h3 class="card-title">📊 Analytics</h3>
+					<p class="card-description">View site analytics and content performance metrics.</p>
+					<div class="card-actions">
+						<a href="/admin/analytics" class="btn btn-primary">View Analytics</a>
+					</div>
+				</div>
+
+				<div class="admin-card">
+					<h3 class="card-title">👥 User Management</h3>
+					<p class="card-description">Manage admin users and their permissions.</p>
+					<div class="card-actions">
+						<a href="/admin/users" class="btn btn-primary">Manage Users</a>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			import PocketBase from 'pocketbase';
+
+			// Check authentication
+			const authData = localStorage.getItem('pb_auth');
+			if (!authData) {
+				window.location.href = '/admin/login';
+			}
+
+			const pb = new PocketBase('http://127.0.0.1:8090');
+			pb.authStore.loadFromCookie(document.cookie);
+
+			// Load dashboard stats
+			async function loadStats() {
+				try {
+					const allPosts = await pb.collection('blog_posts').getList(1, 1000);
+					const posts = allPosts.items;
+
+					document.getElementById('totalPosts').textContent = posts.length.toString();
+					document.getElementById('publishedPosts').textContent =
+						posts.filter(p => p.status === 'published').length.toString();
+					document.getElementById('draftPosts').textContent =
+						posts.filter(p => p.status === 'draft').length.toString();
+					document.getElementById('scheduledPosts').textContent =
+						posts.filter(p => p.status === 'scheduled').length.toString();
+				} catch (error) {
+					console.error('Failed to load stats:', error);
+				}
+			}
+
+			loadStats();
+		</script>
+	</body>
+</html>

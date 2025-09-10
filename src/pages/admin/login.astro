@@ -1,0 +1,139 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+---
+
+<html lang="en">
+	<head>
+		<BaseHead title="Admin Login - NoDaysIdle Blog" description="Admin login for content management" />
+		<style>
+			.login-container {
+				min-height: 100vh;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				background: var(--gradient-secondary);
+			}
+			.login-card {
+				background: var(--bg-card);
+				border-radius: 12px;
+				padding: 2rem;
+				box-shadow: var(--box-shadow-lg);
+				border: 1px solid var(--border);
+				width: 100%;
+				max-width: 400px;
+			}
+			.login-title {
+				text-align: center;
+				margin-bottom: 2rem;
+				color: var(--text-primary);
+			}
+			.form-group {
+				margin-bottom: 1.5rem;
+			}
+			.form-label {
+				display: block;
+				margin-bottom: 0.5rem;
+				color: var(--text-secondary);
+				font-weight: 600;
+			}
+			.form-input {
+				width: 100%;
+				padding: 0.75rem;
+				border: 1px solid var(--border);
+				border-radius: 8px;
+				background: var(--bg-tertiary);
+				color: var(--text-primary);
+				font-size: 16px;
+			}
+			.form-input:focus {
+				outline: none;
+				border-color: var(--primary);
+				box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+			}
+			.login-btn {
+				width: 100%;
+				padding: 0.75rem;
+				background: var(--gradient-primary);
+				color: white;
+				border: none;
+				border-radius: 8px;
+				font-weight: 600;
+				cursor: pointer;
+				transition: transform 0.2s ease;
+			}
+			.login-btn:hover {
+				transform: translateY(-1px);
+			}
+			.error-message {
+				color: var(--error);
+				text-align: center;
+				margin-top: 1rem;
+				font-size: 0.9rem;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="login-container">
+			<div class="login-card">
+				<h1 class="login-title">Admin Login</h1>
+				<form id="loginForm">
+					<div class="form-group">
+						<label for="email" class="form-label">Email</label>
+						<input
+							type="email"
+							id="email"
+							name="email"
+							class="form-input"
+							required
+							placeholder="admin@example.com"
+						/>
+					</div>
+					<div class="form-group">
+						<label for="password" class="form-label">Password</label>
+						<input
+							type="password"
+							id="password"
+							name="password"
+							class="form-input"
+							required
+							placeholder="Enter your password"
+						/>
+					</div>
+					<button type="submit" class="login-btn">Login</button>
+				</form>
+				<div id="errorMessage" class="error-message" style="display: none;"></div>
+			</div>
+		</div>
+
+		<script>
+			import PocketBase from 'pocketbase';
+
+			const pb = new PocketBase('http://127.0.0.1:8090');
+			const loginForm = document.getElementById('loginForm') as HTMLFormElement;
+			const errorMessage = document.getElementById('errorMessage') as HTMLDivElement;
+
+			loginForm.addEventListener('submit', async (e) => {
+				e.preventDefault();
+
+				const formData = new FormData(loginForm);
+				const email = formData.get('email') as string;
+				const password = formData.get('password') as string;
+
+				try {
+					errorMessage.style.display = 'none';
+					const authData = await pb.collection('admin_users').authWithPassword(email, password);
+
+					// Store auth data in localStorage
+					localStorage.setItem('pb_auth', JSON.stringify(authData));
+
+					// Redirect to admin dashboard
+					window.location.href = '/admin';
+				} catch (error) {
+					console.error('Login failed:', error);
+					errorMessage.textContent = 'Invalid email or password';
+					errorMessage.style.display = 'block';
+				}
+			});
+		</script>
+	</body>
+</html>

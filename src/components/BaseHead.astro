@@ -1,0 +1,122 @@
+---
+import '../styles/global.css';
+import type { ImageMetadata } from 'astro';
+import FallbackImage from '../assets/blog-placeholder-1.jpg';
+import { SITE_TITLE, SITE_DESCRIPTION, LANGUAGES } from '../consts';
+
+interface Props {
+	title: string;
+	description: string;
+	image?: ImageMetadata;
+	lang?: string;
+	type?: 'website' | 'article';
+	publishedTime?: string;
+	modifiedTime?: string;
+	author?: string;
+	keywords?: string[];
+	articleSection?: string;
+	tags?: string[];
+}
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const currentLang = Astro.props.lang || 'en';
+
+const {
+	title,
+	description,
+	image = FallbackImage,
+	type = 'website',
+	publishedTime,
+	modifiedTime,
+	author,
+	keywords,
+	articleSection,
+	tags
+} = Astro.props;
+
+// Generate language alternates
+const languageAlternates = Object.keys(LANGUAGES).map(lang => {
+	const url = new URL(Astro.url);
+	url.searchParams.set('lang', lang);
+	return {
+		lang: lang === 'en' ? 'en' : lang,
+		url: url.toString()
+	};
+});
+---
+
+<!-- Global Metadata -->
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="sitemap" href="/sitemap.xml" />
+<meta name="generator" content={Astro.generator} />
+
+<!-- Language -->
+<meta name="language" content={currentLang} />
+
+<!-- Font preloads -->
+<link rel="preload" href="/fonts/atkinson-regular.woff" as="font" type="font/woff" crossorigin />
+<link rel="preload" href="/fonts/atkinson-bold.woff" as="font" type="font/woff" crossorigin />
+
+<!-- Canonical URL -->
+<link rel="canonical" href={canonicalURL} />
+
+<!-- Language alternates -->
+{languageAlternates.map(alt => (
+	<link rel="alternate" hreflang={alt.lang} href={alt.url} />
+))}
+
+<!-- Primary Meta Tags -->
+<title>{title}</title>
+<meta name="title" content={title} />
+<meta name="description" content={description} />
+{keywords && <meta name="keywords" content={keywords.join(', ')} />}
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content={type} />
+<meta property="og:url" content={Astro.url} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:image" content={new URL(image.src, Astro.url)} />
+<meta property="og:site_name" content={SITE_TITLE} />
+{type === 'article' && author && <meta property="article:author" content={author} />}
+{type === 'article' && publishedTime && <meta property="article:published_time" content={publishedTime} />}
+{type === 'article' && modifiedTime && <meta property="article:modified_time" content={modifiedTime} />}
+{type === 'article' && articleSection && <meta property="article:section" content={articleSection} />}
+{tags && tags.map(tag => <meta property="article:tag" content={tag} />)}
+
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image" />
+<meta property="twitter:url" content={Astro.url} />
+<meta property="twitter:title" content={title} />
+<meta property="twitter:description" content={description} />
+<meta property="twitter:image" content={new URL(image.src, Astro.url)} />
+
+<!-- Structured Data -->
+<script type="application/ld+json" set:html={
+	JSON.stringify({
+		"@context": "https://schema.org",
+		"@type": type === 'article' ? "BlogPosting" : "WebSite",
+		"name": title,
+		"description": description,
+		"url": Astro.url.toString(),
+		"publisher": {
+			"@type": "Organization",
+			"name": SITE_TITLE,
+			"description": SITE_DESCRIPTION
+		},
+		...(type === 'article' && {
+			"headline": title,
+			"datePublished": publishedTime,
+			"dateModified": modifiedTime,
+			"author": {
+				"@type": "Person",
+				"name": author || "NoDaysIdle"
+			},
+			...(tags && {
+				"keywords": tags.join(", ")
+			})
+		})
+	})
+} />

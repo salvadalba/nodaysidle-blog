@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Block admin areas
+Disallow: /admin/
+Disallow: /_/
+
+# Sitemap
+Sitemap: https://no-days-idle-blog.netlify.app/sitemap.xml
