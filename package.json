@@ -15,6 +15,7 @@
     "@astrojs/rss": "^4.0.12",
     "@astrojs/sitemap": "^3.5.1",
     "@astrojs/tailwind": "^6.0.2",
+    "@vercel/speed-insights": "^1.2.0",
     "astro": "^5.13.7",
     "pocketbase": "^0.26.2",
     "react": "^19.1.1",

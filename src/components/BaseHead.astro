@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import { SpeedInsights } from '@vercel/speed-insights/astro';
 import type { ImageMetadata } from 'astro';
 import FallbackImage from '../assets/blog-placeholder-1.jpg';
 import { SITE_TITLE, SITE_DESCRIPTION, LANGUAGES } from '../consts';
@@ -94,29 +95,33 @@ const languageAlternates = Object.keys(LANGUAGES).map(lang => {
 <meta property="twitter:image" content={new URL(image.src, Astro.url)} />
 
 <!-- Structured Data -->
-<script type="application/ld+json" set:html={
-	JSON.stringify({
-		"@context": "https://schema.org",
-		"@type": type === 'article' ? "BlogPosting" : "WebSite",
-		"name": title,
-		"description": description,
-		"url": Astro.url.toString(),
-		"publisher": {
-			"@type": "Organization",
-			"name": SITE_TITLE,
-			"description": SITE_DESCRIPTION
-		},
-		...(type === 'article' && {
-			"headline": title,
-			"datePublished": publishedTime,
-			"dateModified": modifiedTime,
-			"author": {
-				"@type": "Person",
-				"name": author || "NoDaysIdle"
+	<script type="application/ld+json" set:html={
+		JSON.stringify({
+			"@context": "https://schema.org",
+			"@type": type === 'article' ? "BlogPosting" : "WebSite",
+			"name": title,
+			"description": description,
+			"url": Astro.url.toString(),
+			"publisher": {
+				"@type": "Organization",
+				"name": SITE_TITLE,
+				"description": SITE_DESCRIPTION
 			},
-			...(tags && {
-				"keywords": tags.join(", ")
+			...(type === 'article' && {
+				"headline": title,
+				"datePublished": publishedTime,
+				"dateModified": modifiedTime,
+				"author": {
+					"@type": "Person",
+					"name": author || "NoDaysIdle"
+				},
+				...(tags && {
+					"keywords": tags.join(", ")
+				})
 			})
 		})
-	})
-} />
+	} />
+
+	<!-- Vercel Speed Insights -->
+	<SpeedInsights />
+
