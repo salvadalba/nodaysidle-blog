@@ -2,13 +2,9 @@
 title: "The Mirror Effect: When AI Reflects Our Own Biases"
 description: "Exploring how AI systems reflect human biases and the importance of accountability in AI development"
 pubDate: 2025-09-10
-lang: en
-status: published
-author: "NoDaysIdle"
+heroImage: "../../assets/blog-placeholder-1.jpg"
 tags: ["AI Ethics", "Bias", "Human Responsibility", "Accountability"]
-seoTitle: "The Mirror Effect: AI Bias and Human Responsibility"
-seoDescription: "Discover how AI systems don't create bias—they amplify human prejudices. Learn about the mirror effect and why human accountability matters in AI development."
-readingTime: 8
+language: "en"
 ---
 
 # The Mirror Effect: When AI Reflects Our Own Biases

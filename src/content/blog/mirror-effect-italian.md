@@ -2,13 +2,9 @@
 title: "L'Effetto Specchio: Quando l'IA Riflette i Nostri Pregiudizi"
 description: "Esplorando come i sistemi AI riflettono i pregiudizi umani e l'importanza della responsabilità nello sviluppo dell'IA"
 pubDate: 2025-09-10
-lang: it
-status: published
-author: "NoDaysIdle"
+heroImage: "../../assets/blog-placeholder-2.jpg"
 tags: ["AI Ethics", "Bias", "Human Responsibility", "Accountability"]
-seoTitle: "L'Effetto Specchio: Pregiudizi AI e Responsabilità Umana"
-seoDescription: "Scopri come i sistemi AI non creano pregiudizi—amplificano i pregiudizi umani. Impara sull'effetto specchio e perché la responsabilità umana conta nello sviluppo dell'IA."
-readingTime: 8
+language: "it"
 ---
 
 # L'Effetto Specchio: Quando l'IA Riflette i Nostri Pregiudizi

@@ -2,13 +2,9 @@
 title: "Zrcalni Učinek: Ko Umetna Inteligenca Odraža Naše Lastne Predsodke"
 description: "Raziskovanje, kako sistemi UI odražajo človeške predsodke in pomen odgovornosti pri razvoju UI"
 pubDate: 2025-09-10
-lang: sl
-status: published
-author: "NoDaysIdle"
+heroImage: ../../assets/blog-placeholder-1.jpg
 tags: ["AI Ethics", "Bias", "Human Responsibility", "Accountability"]
-seoTitle: "Zrcalni Učinek: Predsodki UI in Človeška Odgovornost"
-seoDescription: "Odkrijte, kako sistemi UI ne ustvarjajo predsodkov—povečujejo človeške predsodke. Naučite se o zrcalnem učinku in zakaj je človeška odgovornost pomembna pri razvoju UI."
-readingTime: 8
+language: sl
 ---
 
 # Zrcalni Učinek: Ko Umetna Inteligenca Odraža Naše Lastne Predsodke
