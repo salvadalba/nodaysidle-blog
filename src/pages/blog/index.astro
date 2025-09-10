@@ -274,14 +274,14 @@ const posts = allPosts.filter(post => (post.data.language || 'en') === lang);
 
 		<script>
 			// Static data from content collections (passed from server)
-			const staticPosts = {JSON.stringify(posts.map(post => ({
+			const staticPosts = JSON.stringify(posts.map(post => ({
 				slug: post.slug,
 				title: post.data.title,
 				description: post.data.description,
 				publish_date: post.data.pubDate.toISOString(),
 				tags: post.data.tags || [],
 				language: post.data.language || 'en'
-			})))};
+			})));
 
 			let currentLang = '{lang}';
 			let allPosts = JSON.parse(staticPosts);
