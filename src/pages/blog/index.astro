@@ -3,19 +3,15 @@ import BaseHead from '../../components/BaseHead.astro';
 import Footer from '../../components/Footer.astro';
 import Header from '../../components/Header.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
-import { getCollection } from 'astro:content';
+import { blogApi, utils as pocketbaseUtils } from '../../lib/pocketbase';
 
 // Get current language from URL params or default to English
 const url = new URL(Astro.request.url);
-const lang = url.searchParams.get('lang') || 'en';
+const lang = (url.searchParams.get('lang') || 'en') as 'en' | 'it' | 'sl';
 
-// Get posts from content collections
-const allPosts = (await getCollection('blog')).sort(
-  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
-);
-
-// Filter posts by language
-const posts = allPosts.filter(post => (post.data.language || 'en') === lang);
+// Fetch posts from PocketBase
+const response = await blogApi.getPublishedPosts({ language: lang });
+const posts = response.items;
 ---
 
 <!doctype html>
@@ -257,71 +253,38 @@ const posts = allPosts.filter(post => (post.data.language || 'en') === lang);
 				<p class="hero-subtitle">Explore our latest articles on AI ethics and human responsibility</p>
 
 				<nav class="language-switcher" aria-label="Language selection">
-					<a href="?lang=en" class={`lang-btn ${lang === 'en' ? 'active' : ''}`} aria-current={lang === 'en' ? 'page' : undefined}>English</a>
-					<a href="?lang=it" class={`lang-btn ${lang === 'it' ? 'active' : ''}`} aria-current={lang === 'it' ? 'page' : undefined}>Italiano</a>
-					<a href="?lang=sl" class={`lang-btn ${lang === 'sl' ? 'active' : ''}`} aria-current={lang === 'sl' ? 'page' : undefined}>Slovenščina</a>
+					<a href="?lang=en" class:list={[ 'lang-btn', { active: lang === 'en' } ]} aria-current={lang === 'en' ? 'page' : undefined}>English</a>
+					<a href="?lang=it" class:list={[ 'lang-btn', { active: lang === 'it' } ]} aria-current={lang === 'it' ? 'page' : undefined}>Italiano</a>
+					<a href="?lang=sl" class:list={[ 'lang-btn', { active: lang === 'sl' } ]} aria-current={lang === 'sl' ? 'page' : undefined}>Slovenščina</a>
 				</nav>
 			</div>
 		</header>
 
 		<main id="main-content" class="posts-section">
-			<section id="postsSection" class="posts-grid" aria-label="Blog posts" role="region" aria-live="polite">
-				<!-- Posts will be loaded here -->
+			<section id="postsSection" class="posts-grid" aria-label="Blog posts" role="region">
+				{posts.length === 0 ? (
+					<div style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: var(--text-muted);">
+						<h3>No posts found</h3>
+						<p>Check back later for new content.</p>
+					</div>
+				) : (
+					posts.map(post => (
+						<a href={`/blog/${post.slug}?lang=${lang}`} class="blog-card">
+							<div class="post-image">
+								📝
+							</div>
+							<h3 class="post-title">{post.title}</h3>
+							<p class="post-description">{post.excerpt || 'Read more...'}</p>
+							<div class="post-meta">
+								<span class="post-language">{lang.toUpperCase()}</span>
+								<span>{pocketbaseUtils.formatDate(post.publish_date || post.created)}</span>
+							</div>
+						</a>
+					))
+				)}
 			</section>
 		</main>
 
 		<Footer />
-
-		<script>
-			// Static data from content collections (passed from server)
-			const staticPosts = JSON.stringify(posts.map(post => ({
-				slug: post.slug,
-				title: post.data.title,
-				description: post.data.description,
-				publish_date: post.data.pubDate.toISOString(),
-				tags: post.data.tags || [],
-				language: post.data.language || 'en'
-			})));
-
-			let currentLang = '{lang}';
-			let allPosts = JSON.parse(staticPosts);
-
-			// Load posts
-			function loadPosts() {
-				renderPosts(allPosts);
-			}
-
-			// Render posts
-			function renderPosts(posts) {
-				const postsSection = document.getElementById('postsSection');
-
-				if (posts.length === 0) {
-					postsSection.innerHTML = `
-						<div style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: var(--text-muted);">
-							<h3>No posts found</h3>
-							<p>Check back later for new content.</p>
-						</div>
-					`;
-					return;
-				}
-
-				postsSection.innerHTML = posts.map(post => `
-					<a href="/blog/${post.slug}?lang=${currentLang}" class="blog-card">
-						<div class="post-image">
-							📝
-						</div>
-						<h3 class="post-title">${post.title}</h3>
-						<p class="post-description">${post.description}</p>
-						<div class="post-meta">
-							<span class="post-language">${currentLang.toUpperCase()}</span>
-							<span>${new Date(post.publish_date).toLocaleDateString()}</span>
-						</div>
-					</a>
-				`).join('');
-			}
-
-			// Initial load
-			loadPosts();
-		</script>
 	</body>
 </html>
