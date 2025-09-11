@@ -1,62 +1,91 @@
-# Astro Starter Kit: Blog
+# NoDaysIdle Blog
 
-```sh
-npm create astro@latest -- --template blog
+This is the official blog for NoDaysIdle, built with Astro, Tailwind CSS, and PocketBase. The blog features articles on AI ethics, human responsibility, and technology.
+
+## ✨ Features
+
+-   **Astro**: A modern static site builder for fast and optimized websites.
+-   **Tailwind CSS**: A utility-first CSS framework for rapid UI development.
+-   **PocketBase**: An open-source backend for content management.
+-   **Multi-language Support**: Content is available in English, Italian, and Slovenian.
+-   **SEO Friendly**: Includes sitemap generation, RSS feeds, and OpenGraph data.
+
+## 🚀 Project Setup
+
+### Prerequisites
+
+-   Node.js (v20 or higher)
+-   npm
+-   PocketBase server
+
+### 1. Clone the repository
+
+```bash
+git clone <repository-url>
+cd <repository-directory>
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+### 2. Install dependencies
 
-Features:
-
-- ✅ Minimal styling (make it your own!)
-- ✅ 100/100 Lighthouse performance
-- ✅ SEO-friendly with canonical URLs and OpenGraph data
-- ✅ Sitemap support
-- ✅ RSS Feed support
-- ✅ Markdown & MDX support
-
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-├── public/
-├── src/
-│   ├── components/
-│   ├── content/
-│   ├── layouts/
-│   └── pages/
-├── astro.config.mjs
-├── README.md
-├── package.json
-└── tsconfig.json
+```bash
+npm install
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+### 3. Set up PocketBase
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+This project requires a running PocketBase instance.
 
-The `src/content/` directory contains "collections" of related Markdown and MDX documents. Use `getCollection()` to retrieve posts from `src/content/blog/`, and type-check your frontmatter using an optional schema. See [Astro's Content Collections docs](https://docs.astro.build/en/guides/content-collections/) to learn more.
+1.  **Download PocketBase**: Download the appropriate executable for your operating system from the [PocketBase website](https://pocketbase.io/docs/).
+2.  **Start the server**: Run the PocketBase executable in the root of the project directory.
 
-Any static assets, like images, can be placed in the `public/` directory.
+    ```bash
+    ./pocketbase serve
+    ```
+
+    The server will start at `http://127.0.0.1:8090`.
+
+3.  **Initialize the database**: Once the server is running, you can set up the database schema by running the setup script:
+
+    ```bash
+    npm node setup-pocketbase.js
+    ```
+
+    This will create the necessary collections and seed the database with some initial data.
+
+### 4. Start the development server
+
+Once the PocketBase server is running, you can start the Astro development server:
+
+```bash
+npm run dev
+```
+
+The site will be available at `http://localhost:4321`.
 
 ## 🧞 Commands
 
 All commands are run from the root of the project, from a terminal:
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+| Command         | Action                                      |
+| :-------------- | :------------------------------------------ |
+| `npm install`   | Installs dependencies                       |
+| `npm run dev`   | Starts the local development server         |
+| `npm run build` | Builds the site for production to `./dist/` |
+| `npm run preview` | Previews the production build locally       |
 
-## 👀 Want to learn more?
+## Project Structure
 
-Check out [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+```
+src/
+├── components/     # Reusable Astro components
+├── layouts/        # Page layout components
+├── pages/          # Route-based pages
+├── lib/            # Utility functions and API clients (PocketBase)
+├── content/        # (Legacy) Content collections
+├── assets/         # Static assets (images, etc.)
+└── styles/         # Global styles and CSS
+```
 
-## Credit
+## 📝 License
 
-This theme is based off of the lovely [Bear Blog](https://github.com/HermanMartinus/bearblog/).
+This project is licensed under the MIT License. See the [LICENSE.md](LICENSE.md) file for details.

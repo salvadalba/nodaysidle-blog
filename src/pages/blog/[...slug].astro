@@ -1,22 +1,28 @@
 ---
-import { type CollectionEntry, getCollection, render } from 'astro:content';
-import BlogPost from '../../layouts/BlogPost.astro';
+import { blogApi, type BlogPost as BlogPostType } from '../../lib/pocketbase';
+import BlogPostLayout from '../../layouts/BlogPostLayout.astro';
 
 export const prerender = true;
 
 export async function getStaticPaths() {
-	const posts = await getCollection('blog');
-	return posts.map((post) => ({
-		params: { slug: post.id },
-		props: post,
-	}));
+  const [enPosts, itPosts, slPosts] = await Promise.all([
+    blogApi.getPublishedPosts({ language: 'en', limit: 200 }),
+    blogApi.getPublishedPosts({ language: 'it', limit: 200 }),
+    blogApi.getPublishedPosts({ language: 'sl', limit: 200 }),
+  ]);
+
+  const posts = [...enPosts.items, ...itPosts.items, ...slPosts.items];
+
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: post,
+  }));
 }
-type Props = CollectionEntry<'blog'>;
+type Props = BlogPostType;
 
 const post = Astro.props;
-const { Content } = await render(post);
 ---
 
-<BlogPost {...post.data}>
-	<Content />
-</BlogPost>
+<BlogPostLayout {...post}>
+	<div set:html={post.content} />
+</BlogPostLayout>
