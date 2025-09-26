@@ -1,0 +1,112 @@
+name: Deploy Astro Blog to GitHub Pages
+
+     on:
+       push:
+         branches: [ main ]
+       pull_request:
+         branches: [ main ]
+       workflow_dispatch:
+
+     permissions:
+       contents: read
+       pages: write
+       id-token: write
+
+     concurrency:
+       group: "pages"
+       cancel-in-progress: false
+
+     jobs:
+       build:
+         runs-on: ubuntu-latest
+         steps:
+           - name: Checkout
+             uses: actions/checkout@v4
+
+           - name: Setup Node.js
+             uses: actions/setup-node@v4
+             with:
+               node-version: "20"
+               cache: 'npm'
+
+           - name: Setup Pages
+             id: pages
+             uses: actions/configure-pages@v4
+
+           - name: Install dependencies
+             run: npm ci
+
+           - name: Build with Astro
+             run: |
+               npx astro build \
+                 --site "${{ steps.pages.outputs.origin }}" \
+                 --base "${{ steps.pages.outputs.base_path }}"
+             env:
+               NODE_ENV: production
+
+           - name: Upload artifact
+             uses: actions/upload-pages-artifact@v3
+             with:
+               path: ./dist
+
+       deploy:
+         environment:
+           name: github-pages
+           url: ${{ steps.deployment.outputs.page_url }}
+         needs: build
+         runs-on: ubuntu-latest
+         name: Deploy
+         steps:
+           - name: Deploy to GitHub Pages
+             id: deployment
+             uses: actions/deploy-pages@v4
+
+     1. Commit the file:
+       * Scroll down
+
+       * Add commit message: 🚀 Add GitHub Pages deployment workflow
+
+       * Click "Commit new file"
+
+   ### Step 2: Update Astro Configuration
+
+     1. Find the file astro.config.mjs in your repository
+     2. Click the pencil icon (Edit this file)
+     3. Replace ALL content with:
+
+     // @ts-check
+
+     import mdx from '@astrojs/mdx';
+     import sitemap from '@astrojs/sitemap';
+     import tailwind from '@astrojs/tailwind';
+     import { defineConfig } from 'astro/config';
+
+     // https://astro.build/config
+     export default defineConfig({
+        site: 'https://salvadalba.github.io',
+        base: '/nodaysidle-blog',
+        output: 'static',
+        integrations: [
+                mdx(),
+                tailwind({
+                        applyBaseStyles: false
+                }),
+                sitemap({
+                        changefreq: 'weekly',
+                        priority: 0.7,
+                        lastmod: new Date(),
+                })
+        ],
+        build: {
+                assets: '_astro'
+        },
+        vite: {
+                build: {
+                        rollupOptions: {
+                                output: {
+                                        assetFileNames: '_astro/[name].[hash][extname]'
+                                }
+                        }
+                }
+        }
+     });
