@@ -1,10 +1,8 @@
-name: Deploy Astro Blog to GitHub Pages
+name: Deploy to GitHub Pages
 
      on:
        push:
-         branches: [ main ]
-       pull_request:
-         branches: [ main ]
+         branches: [main]
        workflow_dispatch:
 
      permissions:
@@ -23,26 +21,20 @@ name: Deploy Astro Blog to GitHub Pages
            - name: Checkout
              uses: actions/checkout@v4
 
-           - name: Setup Node.js
+           - name: Setup Node
              uses: actions/setup-node@v4
              with:
-               node-version: "20"
-               cache: 'npm'
-
-           - name: Setup Pages
-             id: pages
-             uses: actions/configure-pages@v4
+               node-version: 20
+               cache: npm
 
            - name: Install dependencies
-             run: npm ci
+             run: npm install
 
-           - name: Build with Astro
-             run: |
-               npx astro build \
-                 --site "${{ steps.pages.outputs.origin }}" \
-                 --base "${{ steps.pages.outputs.base_path }}"
-             env:
-               NODE_ENV: production
+           - name: Build site
+             run: npm run build
+
+           - name: Setup Pages
+             uses: actions/configure-pages@v4
 
            - name: Upload artifact
              uses: actions/upload-pages-artifact@v3
@@ -50,12 +42,11 @@ name: Deploy Astro Blog to GitHub Pages
                path: ./dist
 
        deploy:
+         needs: build
+         runs-on: ubuntu-latest
          environment:
            name: github-pages
            url: ${{ steps.deployment.outputs.page_url }}
-         needs: build
-         runs-on: ubuntu-latest
-         name: Deploy
          steps:
            - name: Deploy to GitHub Pages
              id: deployment
