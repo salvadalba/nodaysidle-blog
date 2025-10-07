@@ -1,0 +1,17 @@
+title: "NODAYSIDLE Journal"
+author: salvadalba
+description: "A collection of technical articles, project logs, and insights on building resilient hardware and software systems."
+
+# Important settings for GitHub Pages
+baseurl: "/nodaysidle-blog" # MUST match your repository name
+url: "https://salvadalba.github.io" # Your GitHub Pages URL
+
+# Build settings
+markdown: kramdown
+permalink: /:categories/:title/
+
+# Plugins
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+  - jekyll-sitemap
